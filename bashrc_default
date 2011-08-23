@@ -1,0 +1,42 @@
+
+# Check for an interactive session
+[ -z "$PS1" ] && return
+
+RED='\[\e[1;31m\]'
+GREEN='\[\e[1;32m\]'
+YELLOW='\[\e[1;33m\]'
+BLUE='\[\e[1;34m\]'
+PURPLE='\[\e[1;35m\]'
+NOCOL='\[\e[0m\]'
+GITBRANCH='$(parse_git_branch)'
+
+#GIT PROMPT SETUP
+source ~/.git-completion.sh
+export GIT_PS1_SHOWUPSTREAM=auto
+export GIT_PS1_SHOWDIRTYSTATE=yes
+
+function parse_git_dirty 
+{
+    git diff --quiet HEAD &>/dev/null
+#     [[ $? == 1 ]] && echo " ➜" || echo " ↓"
+}
+
+function parse_git_branch
+{
+    local branch=$(__git_ps1 "%s")
+    [[ $branch ]] && echo "($branch$(parse_git_dirty))"
+}
+
+# PS1="${GREEN}\u@${BLUE}\h \W${YELLOW} $(parse_git_branch "%s") ${BLUE}$ ${NOCOL}"
+PS1='\[\e[1;32m\]\u@\[\e[1;34m\]\h \W\[\e[1;33m\] $(parse_git_branch %s) \[\e[1;34m\]$ \[\e[0m\]'
+
+export GREP_COLOR="1;33"
+export EDITOR="nano"
+#export PATH=~/bin/:$PATH
+export CCACHE_DIR="/var/tmp/ccache-$USER"
+
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias update="yaourt -Syyu --aur --devel"
+alias devCmake="cmake -DCMAKE_INSTALL_PREFIX=/usr ../"
+alias cmake64bitKDE="make -DCMAKE_INSTALL_PREFIX='kde4-config --prefix' -DCMAKE_BUILD_TYPE=debugfull -DLIB_SUFFIX=64 ../"
